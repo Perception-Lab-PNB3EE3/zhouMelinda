@@ -8,7 +8,9 @@ Participants in this study will be presented with pairs of facial stimuli showin
 By measuring reaction times to probes, the study infers attentional biases to threat and avoidance behavior and how it correlates to social anxiety levels.
 
 # General Design
-Participants will view two face stimuli simultaneously, with opposite facial expression transition direction (one is angry-to-neutral, the other is neutral-to-angry). A probe (dot) will appear behind one of the videos, and reaction time according to facial expression transition will be recorded. The probe may be congruent (appear behind the neutral-to-angry face) or incongruent (appear behind the angry-to-neutral face). Participants will later fill out a LSAS questionnaire for researchers to evaluate social anxiety levels. They will also be given the opportunity to disclose any mental health diagnoses. Conditions are randomized and balanced. Certain emotional transition faces and probe will appear randomly on the left or right side, but each location will be shown an equal number of times. Experimentally, there is only one manipulated independent variable (congruency).
+Participants will view two face stimuli simultaneously, with opposite facial expression transition direction (one is angry-to-neutral, the other is neutral-to-angry). A probe (dot) will appear behind one of the videos, and reaction time according to facial expression transition will be recorded. The probe may be congruent (appear behind the neutral-to-angry face) or incongruent (appear behind the angry-to-neutral face). Conditions are randomized and balanced. Certain emotional transition faces and probe will appear randomly on the left or right side, but each location will be shown an equal number of times. Experimentally, there is only one manipulated independent variable (congruency).
+
+Participants will later fill out a LSAS questionnaire for researchers to evaluate social anxiety levels. They will also be given the opportunity to disclose any mental health diagnoses.
 
 Fun fact: this experiment contains practice trials and break trials! 
 
@@ -24,6 +26,17 @@ Fun fact: this experiment contains practice trials and break trials!
 4. After the experiment is run, it will automatically be downloaded as a csv file ("probe_experiment_data.csv")
 
 Please note: You will need a Wifi connection to run the experiment, as it requires importing from jsPsych!
+
+# Experiment Timeline
+1. Preload (this will load all the images and videos for this experiment)
+2. Consent form (participants will not be allowed into the experiment if they do not consent)
+3. Practice loop (participants will have basic experiment instructions here, they will also only be allowed to move into the actual experiment if they have a response accuracy of 80% or higher)
+4. Instructions (a repeat of the instructions from the practice loop as well as notification that participants will be entering the actual experiment)
+5. Trial procedure (dot-probe trials)
+  - An optional break will appear after half of the trials are completed
+6. Diagnosis trial (participants have the opportunity to disclose diagnoses)
+7. LSAS questionnaire (24-item questionnaire measuring social anxiety levels)
+8. Debrief (participants will get their LSAS scores and can download their experiment data automatically at the end)
 
 # Data
 The experiment will collect the following pieces of data from each participant:
