@@ -37,6 +37,7 @@ The experiment will collect the following pieces of data from each participant:
 
 # References
 Questionnaire: Liebowitz, Michael R. Liebowitz Social Phobia Scale. Modern Problems of Pharmacopsychiatry 22 (1987): 143-171.
+
 Faces stimuli: Lyons, M., Kamachi, M., & Gyoba, J. (1997). The Japanese Female Facial Expression (JAFFE) Dataset [Data set]. Zenodo. https://doi.org/10.5281/zenodo.14974867
 
 # Contact Information
