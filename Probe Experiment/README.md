@@ -33,7 +33,7 @@ Please note: You will need a Wifi connection to run the experiment, as it requir
 3. Practice loop (participants will have basic experiment instructions here, they will also only be allowed to move into the actual experiment if they have a response accuracy of 80% or higher)
 4. Instructions (a repeat of the instructions from the practice loop as well as notification that participants will be entering the actual experiment)
 5. Trial procedure (dot-probe trials)
-  - An optional break will appear after half of the trials are completed
+  + An optional break will appear after half of the trials are completed
 6. Diagnosis trial (participants have the opportunity to disclose diagnoses)
 7. LSAS questionnaire (24-item questionnaire measuring social anxiety levels)
 8. Debrief (participants will get their LSAS scores and can download their experiment data automatically at the end)
