@@ -1,9 +1,9 @@
 # The effect of dynamic facial expressions on attentional bias in socially anxious individuals
 
 # Background
-This study investigates how socially anxious individuals allocate attention to emotional facial expressions using a dot-probe paradigm. The research addresses contradictory findings in the literature: cognitive models predict selective attention to negative facial expressions, whereas some clinical observations suggest avoidance of such cues.
+This study investigates how socially anxious individuals allocate attention to emotional facial expressions using a dot-probe paradigm. The research addresses contradictory findings in the literature: cognitive models predict selective attention to negative (i.e., angry) facial expressions, whereas some clinical observations suggest avoidance of such cues.
 
-Participants are presented with pairs of facial stimuli showing bi-directional emotional transitions between neutral and angry expressions. Transitions from neutral to angry may signal the emergence of a threat, while angry to neutral transitions may signal the disappearance of a threat.
+Participants in this study will be presented with pairs of facial stimuli showing bi-directional emotional transitions between neutral and angry expressions. Transitions from neutral to angry may signal the emergence of a threat, while angry to neutral transitions may signal the disappearance of a threat. They will then fill out a 24-item questionnaire about their social anxiety levels.
 
 By measuring reaction times to probes, the study infers attentional biases to threat and avoidance behavior in socially anxious individuals.
 
