@@ -5,7 +5,7 @@ This study investigates how socially anxious individuals allocate attention to e
 
 Participants in this study will be presented with pairs of facial stimuli showing bi-directional emotional transitions between neutral and angry expressions. Transitions from neutral to angry may signal the emergence of a threat, while angry to neutral transitions may signal the disappearance of a threat. They will then fill out a 24-item questionnaire about their social anxiety levels.
 
-By measuring reaction times to probes, the study infers attentional biases to threat and avoidance behavior in socially anxious individuals.
+By measuring reaction times to probes, the study infers attentional biases to threat and avoidance behavior and how it correlates to social anxiety levels.
 
 # General Methods
 Participants will view two face stimuli simultaneously, with opposite facial expression transition direction (one is angry-to-neutral, the other is neutral-to-angry). A probe (dot) will appear behind one of the videos, and reaction time according to facial expression transition will be recorded. Participants will later fill out a LSAS questionnaire for researchers to evaluate social anxiety levels. They will also be given the opportunity to disclose any mental health diagnoses. Conditions are randomized and balanced. Certain emotional transition faces and probe will appear randomly on the left or right side, but each location will be shown an equal number of times.
