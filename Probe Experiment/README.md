@@ -15,7 +15,7 @@ Fun fact: this experiment contains practice trials and break trials!
 # Files
 - "circle.png" is the probe
 - "stim" is the file of facial expression stimuli. It contains mp4 videos approximately 500ms in length. They follow the labelling convention "[actor #]_[side of neutral-to-angry emotional transition].mp4" (i.e. "1_L.mp4" means that the video contains actor 1, with the neutral-to-angry emotional transition on the left side)
-- "probe_experiemnt.html" is the code
+- "probe_experiment.html" is the code
 
 # How to Use 
 1. Clone the repository using the git clone OR download the experiment code ("probe_experiment.html")
