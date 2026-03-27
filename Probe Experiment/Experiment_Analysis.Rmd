@@ -1,0 +1,339 @@
+---
+title: "Analysis 3EE3 2026"
+output: html_notebook
+author: Melinda Zhou
+
+---
+# Setup
+
+## Load packages
+Here we are loading some packages before moving on to subsequent anaylsis. We can still reload packages later on, as it's easier to see what the packages are immediately used for when they're next to the relevant code. 
+
+If these packages aren't already installed, they can be installed using install.packages(). Once they are installed, install.packages() can be commented out (# at the beginning) or deleted.
+```{r}
+library("ggplot2")
+library("dplyr")
+library("tidyverse")
+library("stats")
+
+# Set randomization seed so everyone will get the same results
+set.seed(123)
+
+```
+
+## Study Design
+Here is a basic setup of the study design based on pre-registration information.
+
+The experiment design used dot-probe tasks to examine attention bias towards dynamic facial expressions. The manipulated independent variable for the experiment ("condition") was congruency. When the dot probe appears behind a facial expression transitioning from neutral to angry, the trial is labelled as congruent. When the dot probe appears behind a facial expression transitioning the reverse direction, angry to neutral, the trial is labelled as incongruent. Congruency, as well as the side (left or right) the faces/dot probes appear on, was randomized in the experiment.
+
+Social anxiety levels were also measured at the end of the dot-probe tasks using the LSAS questionnaire. Participant scores were used to later split participants into two groups---high social anxiety and low social anxiety---using previous literature.
+
+Although the experiment design only has one manipulated independent variable, the analysis will approach the design as a 2x2 (congruent/incongruent and high anxiety/low anxiety). We are interested in observing the correlation between social anxiety levels and reaction time during congruent and incongruent trials. 
+```{r}
+# simulate incorrect responses, have a protocol to remove incorrect responses while keeping conditions balanced; check for incorrect responses and try to find NO systematic things 
+
+# Number of participants
+# This number was calculated using previous literature for 80% statistical power.
+sampleSize = 34
+
+# Condition labels
+# Congruency refers to the dot probe location relative to the facial stimuli. This is the manipulated independent variable (within-subjects) for this experiment.
+condition = c("congruent", "incongruent")
+
+# Participant-level variable
+# Participants are dichotomized to high social anxiety and low social anxiety depending on their LSAS scores. The range of scores for each category, as well as the categorization itself, has occurred during the data-cleaning process. This is technically not an independent variable, but it will be treated as such (between-subjects) for the analysis portion.
+anxietyLevels = c("high", "low")
+
+# Conditions per participant
+# Each participant underwent the same number of congruent and incongruent trials.
+condperparticipant = 2
+
+# Number of trials per condition
+# Each participant underwent a balanced number of congruent and incongruent trials. Only the trials in which the participants answered correctly (i.e., accurately identified if the probe was on the left or right) are included past the data-cleaning stage.
+nTrialsCond = 6
+```
+
+## Simulate data that mimics our expected results
+The idea here is that if we simulate expected effects, we can be sure that our analysis code detects those effects correctly.
+
+### Create dataset
+Each row will represent one trial, so we need every combination of:
+participant × condition × trial
+```{r}
+df <- expand.grid(
+  Participant = 1:sampleSize,
+  Condition = condition,
+  Trial = 1:nTrialsCond
+)
+
+# Look at the first few rows
+head(df)
+
+# Trying to simulate inaccurate (<80% accuracy) participants without generating systematic bias. This was unsuccessful, so I'm commenting this out.
+# sampleSize <- 40 # Number of accepted participants (34 is the sample requirment)
+# participant_info <- data.frame(
+#   Participant = 1:sampleSize,
+#   anxiety = sample(rep(c("high", "low"), each = sampleSize/2))
+# )
+# 
+# df <- merge(df, participant_info, by = "Participant")
+# class(df)
+# 
+# # Simulate accuracy 
+# participant_acc <- data.frame(
+#   Participant = 1:sampleSize,
+#   acc_prob = sample(
+#     c(1.0, 0.95, 0.85, 0.7),
+#     size = sampleSize,
+#     replace = TRUE,
+#     prob = c(0.65, 0.2, 0.1, 0.05)  # most are perfect
+#   )
+# )
+# 
+# library("dplyr")
+# 
+# df <- df %>%
+#   left_join(participant_acc, by = "Participant")
+# 
+# df$accuracy <- rbinom(n = nrow(df), size = 1, prob = df$acc_prob)
+# 
+# participant_summary <- df %>%
+#   group_by(Participant, anxiety) %>%
+#   summarise(acc_rate = mean(accuracy), .groups = "drop")
+# 
+# # Filter for participants accuracy above 80%
+# valid_participants <- participant_summary %>%
+#   filter(acc_rate >= 0.8)
+# 
+# # Create balanced groups (34/2)
+# selected_participants <- valid_participants %>%
+#   group_by(anxiety) %>%
+#   slice_sample(n = 17) %>%
+#   ungroup()
+# 
+# df_final <- df %>%
+#   semi_join(selected_participants, by = "Participant")
+# 
+# # Should be 34 participants
+# length(unique(df_final$Participant))
+# 
+# # Should be 17 / 17
+# table(unique(df_final[, c("Participant","anxiety")])$anxiety)
+# 
+# # Accuracy check
+# df_final %>%
+#   group_by(Participant) %>%
+#   summarise(acc = mean(accuracy)) %>%
+#   summary()
+# 
+# # Sanity check
+# length(unique(df_final$Participant))  # should be 34
+# table(unique(df_final[, c("Participant","anxiety")])$anxiety)
+```
+
+### Add in participant info
+Each participant should have one anxiety level.
+So first we create a participant-level table...
+```{r}
+participant_info <- data.frame(
+  Participant = 1:sampleSize,
+  anxiety = rep(c("high", "low"), each = sampleSize/2)
+)
+
+# ...then merge it into the trial-level dataset
+df <- merge(df, participant_info, by = "Participant")
+
+# Sort rows nicely
+df <- df[order(df$Participant, df$Condition, df$Trial), ]
+row.names(df) <- NULL
+
+# Inspect the first few rows again
+head(df)
+```
+
+```{r}
+# Create empty column 
+df$RT <- NA
+
+low_con_mean <- 500
+low_incon_mean <- 540
+high_con_mean <- 480
+high_incon_mean <- 560
+sd <- 30
+
+# Define range of valid scores
+possibleScores <- (high_con_mean - 3 * sd):(low_incon_mean + 3 * sd)
+# Excluding outliers more than 3 SDs away
+
+
+# Only sample from our range of values (possibleScores)
+df$RT[df$anxiety == "high" & df$Condition == "congruent"] <- sample(
+  possibleScores,
+  size = sum(df$anxiety == "high" & df$Condition == "congruent"),
+  replace = TRUE,
+  prob = dnorm(possibleScores, mean = high_con_mean, sd = sd)
+)
+
+df$RT[df$anxiety == "high" & df$Condition == "incongruent"] <- sample(
+  possibleScores,
+  size = sum(df$anxiety == "high" & df$Condition == "incongruent"),
+  replace = TRUE,
+  prob = dnorm(possibleScores, mean = high_incon_mean, sd = sd)
+)
+
+# Same for other anxiety level
+df$RT[df$anxiety == "low" & df$Condition == "congruent"] <- sample(
+  possibleScores,
+  size = sum(df$anxiety == "low" & df$Condition == "congruent"),
+  replace = TRUE,
+  prob = dnorm(possibleScores, mean = low_con_mean, sd = sd)
+)
+
+df$RT[df$anxiety == "low" & df$Condition == "incongruent"] <- sample(
+  possibleScores,
+  size = sum(df$anxiety == "low" & df$Condition == "incongruent"),
+  replace = TRUE,
+  prob = dnorm(possibleScores, mean = low_incon_mean, sd = sd)
+)
+```
+
+### Check that our simulation worked as expected
+```{r}
+head(df)
+str(df)
+aggregate(RT ~ Condition, data = df, mean)
+cat("Number of NAs in RT column:", sum(is.na(df$RT)), "\n")
+```
+
+## Data quality checks
+### Histogram of reaction time across both social anxiety levels
+```{r}
+library("ggplot2")
+# basic histogram
+p <- ggplot(df, aes(x=RT)) + 
+  geom_histogram(breaks = seq(300, 700, by = 5)) +
+  coord_cartesian(xlim = c(400, 700))
+p
+```
+
+### Histogram of reaction time scores by condition/congruency
+```{r}
+library("ggplot2")
+ggplot(df, aes(x = RT, fill = Condition)) +
+  geom_histogram(breaks = seq(300, 650, by = 5), position = "identity", alpha = 0.7) +
+  coord_cartesian(xlim = c(400, 650)) +
+  theme_minimal()
+```
+# Statistical Analysis
+```{r}
+library(dplyr)
+library(rstatix)
+
+# Aggregate trial-level RTs to get one mean per participant per condition (so ANOVA will work)
+df_avg <- df %>%
+  group_by(Participant, Condition, anxiety) %>%
+  summarise(RT = mean(RT), .groups = "drop")
+
+# Check ANOVA assumptions
+residuals <- df_avg$RT - ave(df_avg$RT, df_avg$anxiety, df_avg$Condition)
+shapiro.test(residuals) # non-significant result = assumption of normality isn't violated!
+df_avg %>%
+  levene_test(RT ~ anxiety * Condition) # non-significant result = homogeneity of variance assumption isn't violated!
+
+# Run two-way mixed ANOVA
+library(afex)
+anova_result <- aov_ez(
+  id = "Participant",
+  dv = "RT",
+  data = df_avg,
+  between = "anxiety",
+  within = "Condition",
+  type = 3
+)
+
+# View results
+get_anova_table(anova_result)
+
+```
+
+### Effects analysis
+```{r}
+# Get partial eta-squared
+library(effectsize)
+eta_squared(anova_result, partial = TRUE) 
+
+# Simple effects analysis
+library(rstatix)
+
+simple_effects <- df_avg %>%
+  group_by(anxiety) %>%
+  t_test(RT ~ Condition, paired = TRUE) %>%  # paired because within-subject
+  adjust_pvalue(method = "bonferroni") %>%  # control for multiple tests
+  add_significance()
+
+simple_effects
+
+# Calculate Cohen's d for simple effects
+library(dplyr)
+
+# High-anxiety participants
+high_df <- df_avg %>% filter(anxiety == "high")
+
+# Compute difference per participant (incongruent - congruent)
+high_diff <- high_df %>%
+  select(Participant, Condition, RT) %>%
+  tidyr::pivot_wider(names_from = Condition, values_from = RT) %>%  # one column per condition
+  mutate(diff = incongruent - congruent) %>%
+  pull(diff)
+
+# Paired Cohen's d
+d_high <- mean(high_diff) / sd(high_diff)
+d_high
+
+# Low-anxiety participants
+low_df <- df_avg %>% filter(anxiety == "low")
+
+# Compute difference per participant
+low_diff <- low_df %>%
+  select(Participant, Condition, RT) %>%
+  tidyr::pivot_wider(names_from = Condition, values_from = RT) %>%
+  mutate(diff = incongruent - congruent) %>%
+  pull(diff)
+
+# Paired Cohen's d
+d_low <- mean(low_diff) / sd(low_diff)
+d_low
+```
+
+# Visualizing!
+Here we can plot the interaction between our variables.
+```{r}
+library(dplyr)
+library("ggplot2")
+
+ggplot(df_avg, aes(x = Condition, y = RT, color = anxiety, group = anxiety)) +
+  stat_summary(fun = mean, geom = "line", size = 1.3) +
+  stat_summary(fun.data = function(x) {
+    data.frame(
+      ymin = mean(x) - sd(x),  # Lower error bar: mean - SD
+      ymax = mean(x) + sd(x)   # Upper error bar: mean + SD
+    )
+  }, geom = "errorbar", width = 0.1, size = 0.4) +
+  stat_summary(fun = mean, geom = "point", size = 4) +
+  scale_y_continuous(breaks = seq(250, 600, by = 25)) +
+  geom_point(alpha = 0.6, position = position_jitter(width = 0.05)) +
+  scale_color_manual(values = c(
+  "high" = "#D81B60",
+  "low"  = "#1E88E5"
+)) +
+  labs(
+    x = "Condition",
+    y = "Reaction Time (ms)",
+    color = "Social anxiety level"
+  ) +
+  theme_minimal() +
+  theme(axis.text = element_text(size = 20),
+        legend.text = element_text(size = 16))
+
+```
+
